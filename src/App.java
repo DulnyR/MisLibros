@@ -65,42 +65,7 @@ public class App {
                     break;
                 case INFORMACION:
                     if (miAlmacen != null) {
-                        int numeroLibrosAlmacen = miAlmacen.getLibrosAgregados();
-                        if (numeroLibrosAlmacen != 0) {
-                            linea();
-                            printConMargen("LIBROS EN EL ALMACEN");
-                            linea();
-                            printConMargen(new String[] { "Titulo", "Ano de Publicacion", "Autor", "Premio Planeta",
-                                    "Paginas", "Tiempo Lectura Minutos", "Precio" });
-                            linea();
-                            Libro[] libros = miAlmacen.getLibros();
-                            int tiempoTotal = 0;
-                            double precioTotal = 0;
-                            for (int i = 0; i < numeroLibrosAlmacen; i++) {
-                                Libro libro = libros[i];
-                                Autor miAutor = libro.getAutor();
-                                String autorNombre = miAutor.getNombre();
-                                for (String apellido : miAutor.getApellidos()) {
-                                    autorNombre += " " + apellido;
-                                }
-                                int paginas = libro.getNumeroDePaginas();
-                                int tiempo = (int) (paginas / ritmoDeLectura);
-                                double precio = libro.getPrecio();
-                                tiempoTotal += tiempo;
-                                precioTotal += precio;
-                                printConMargen(new String[] { libro.getTitulo(),
-                                        Integer.toString(libro.getAnoDePublicacion()),
-                                        autorNombre, miAutor.getPremioPlaneta() ? "Sí" : "No",
-                                        Integer.toString(paginas), Integer.toString(tiempo), Double.toString(precio) + " E" });
-                                linea();
-                            }
-                            printConMargen("Tiempo de lectura total del almacen: " + Integer.toString(tiempoTotal));
-                            printConMargen("Valor total del almacen: " + Double.toString(precioTotal));
-                            linea();
-                        } 
-                        else {
-                            System.out.println("\nHay que llenar el almacen.");
-                        }
+                        printInfo(miAlmacen, ritmoDeLectura);
                     } 
                     else {
                         System.out.println("\nHay que crear un almacen.");
@@ -113,6 +78,46 @@ public class App {
                     break;
             }
         }
+    }
+
+    public static void printInfo(Almacen miAlmacen, double ritmoDeLectura)
+    {
+        int numeroLibrosAlmacen = miAlmacen.getLibrosAgregados();
+            if (numeroLibrosAlmacen != 0) {
+                linea();
+                printConMargen("LIBROS EN EL ALMACEN");
+                linea();
+                printConMargen(new String[] { "Titulo", "Ano de Publicacion", "Autor", "Premio Planeta",
+                        "Paginas", "Tiempo Lectura Minutos", "Precio" });
+                linea();
+                Libro[] libros = miAlmacen.getLibros();
+                int tiempoTotal = 0;
+                double precioTotal = 0;
+                for (int i = 0; i < numeroLibrosAlmacen; i++) {
+                    Libro libro = libros[i];
+                    Autor miAutor = libro.getAutor();
+                    String autorNombre = miAutor.getNombre();
+                    for (String apellido : miAutor.getApellidos()) {
+                        autorNombre += " " + apellido;
+                    }
+                    int paginas = libro.getNumeroDePaginas();
+                    int tiempo = (int) (paginas / ritmoDeLectura);
+                    double precio = libro.getPrecio();
+                    tiempoTotal += tiempo;
+                    precioTotal += precio;
+                    printConMargen(new String[] { libro.getTitulo(),
+                            Integer.toString(libro.getAnoDePublicacion()),
+                            autorNombre, miAutor.getPremioPlaneta() ? "Sí" : "No",
+                            Integer.toString(paginas), Integer.toString(tiempo), Double.toString(precio) + " E" });
+                    linea();
+                }
+                printConMargen("Tiempo de lectura total del almacen: " + Integer.toString(tiempoTotal));
+                printConMargen("Valor total del almacen: " + Double.toString(precioTotal));
+                linea();
+            } 
+            else {
+                System.out.println("\nHay que llenar el almacen.");
+            }
     }
 
     public static void linea() {
