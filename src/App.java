@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import com.coti.tools.Esdia;
 import modelo.*;
 
@@ -16,8 +17,9 @@ public class App {
         double ritmoDeLectura = 1;
 
         while (seleccion != 5) {
-            seleccion = Esdia.readInt("\n|----------------------------------------------|\n"
-                    + "| MIS LIBROS |\n"
+            seleccion = Esdia.readInt("\n"
+                    + "|----------------------------------------------|\n"
+                    + "| MIS LIBROS                                   |\n"
                     + "|----------------------------------------------|\n"
                     + "1) Nuevo almacén de libros\n"
                     + "2) Configurar ritmo de lectura\n"
@@ -29,7 +31,7 @@ public class App {
 
             switch (seleccion) {
                 case NUEVO_ALMACEN:
-                    int numeroDeLibros = Esdia.readInt("\nTamano del almacen: ", 1, 20);
+                    int numeroDeLibros = Esdia.readInt("\nTamano del almacen: ", 1, 100);
                     miAlmacen = new Almacen(numeroDeLibros);
                     System.out.println("\nAlmacen creado con exito.");
                     break;
@@ -39,21 +41,7 @@ public class App {
                 case NUEVO_LIBRO:
                     if(miAlmacen != null) {
                         if(miAlmacen.getLibrosAgregados() < miAlmacen.getLibros().length) {
-                            String nombreAutor = Esdia.readString("\nNombre del Autor: ");
-                            int numeroDeApellidos = Esdia.readInt("Numero de los apellidos del autor: ");
-                            String[] apellidos = new String[numeroDeApellidos];
-                            for(int i = 0; i < numeroDeApellidos; i++){
-                                String apellido = Esdia.readString("Entra el apellido " + (i+1) + ": ");
-                                apellidos[i] = apellido;
-                            }
-                            boolean premioPlaneta = Esdia.yesOrNo("Premio Planeta: ");
-                            Autor nuevoAutor = new Autor(nombreAutor, apellidos, premioPlaneta);
-                            String titulo = Esdia.readString("Titulo: ");
-                            int anoDePublicacion = Esdia.readInt("Ano de publicacion: ");
-                            int numeroDePaginas = Esdia.readInt("Numero de paginas: ");
-                            double precio = Esdia.readDouble("Precio: ");
-                            Libro nuevoLibro = new Libro(nuevoAutor, titulo, anoDePublicacion, numeroDePaginas, precio);
-                            miAlmacen.agregaLibro(nuevoLibro);
+                            miAlmacen.agregaLibro(preguntasLibro());
                         }
                         else {
                             System.out.println("\nEl almacen esta lleno. Crea un almacen nuevo con tamano mas grande.");
@@ -80,44 +68,63 @@ public class App {
         }
     }
 
-    public static void printInfo(Almacen miAlmacen, double ritmoDeLectura)
-    {
+    public static Libro preguntasLibro() {
+        String nombreAutor = Esdia.readString("\nNombre del Autor: ");
+        int numeroDeApellidos = Esdia.readInt("Numero de los apellidos del autor: ");
+        String[] apellidos = new String[numeroDeApellidos];
+        for(int i = 0; i < numeroDeApellidos; i++){
+            String apellido = Esdia.readString("Entra el apellido " + (i+1) + ": ");
+            apellidos[i] = apellido;
+        }
+        boolean premioPlaneta = Esdia.yesOrNo("Premio Planeta: ");
+        Autor nuevoAutor = new Autor(nombreAutor, apellidos, premioPlaneta);
+        String titulo = Esdia.readString("Titulo: ");
+        int anoDePublicacion = Esdia.readInt("Ano de publicacion: ");
+        int numeroDePaginas = Esdia.readInt("Numero de paginas: ");
+        double precio = Esdia.readDouble("Precio: ");
+        Libro nuevoLibro = new Libro(nuevoAutor, titulo, anoDePublicacion, numeroDePaginas, precio);
+        return nuevoLibro;
+    }
+
+    public static void printInfo(Almacen miAlmacen, double ritmoDeLectura) {
         int numeroLibrosAlmacen = miAlmacen.getLibrosAgregados();
-            if (numeroLibrosAlmacen != 0) {
-                linea();
-                printConMargen("LIBROS EN EL ALMACEN");
-                linea();
-                printConMargen(new String[] { "Titulo", "Ano de Publicacion", "Autor", "Premio Planeta",
-                        "Paginas", "Tiempo Lectura Minutos", "Precio" });
-                linea();
-                Libro[] libros = miAlmacen.getLibros();
-                int tiempoTotal = 0;
-                double precioTotal = 0;
-                for (int i = 0; i < numeroLibrosAlmacen; i++) {
-                    Libro libro = libros[i];
-                    Autor miAutor = libro.getAutor();
-                    String autorNombre = miAutor.getNombre();
-                    for (String apellido : miAutor.getApellidos()) {
-                        autorNombre += " " + apellido;
-                    }
-                    int paginas = libro.getNumeroDePaginas();
-                    int tiempo = (int) (paginas / ritmoDeLectura);
-                    double precio = libro.getPrecio();
-                    tiempoTotal += tiempo;
-                    precioTotal += precio;
-                    printConMargen(new String[] { libro.getTitulo(),
-                            Integer.toString(libro.getAnoDePublicacion()),
-                            autorNombre, miAutor.getPremioPlaneta() ? "Sí" : "No",
-                            Integer.toString(paginas), Integer.toString(tiempo), Double.toString(precio) + " E" });
-                    linea();
+        DecimalFormat dosDec = new DecimalFormat("#.00");
+        if (numeroLibrosAlmacen != 0) {
+            linea();
+            printConMargen("LIBROS EN EL ALMACEN");
+            linea();
+            printConMargen(new String[] { "Titulo", "Ano de Publicacion", "Autor", "Premio Planeta",
+                    "Paginas", "Tiempo Lectura Minutos", "Precio" });
+            linea();
+            Libro[] libros = miAlmacen.getLibros();
+            int tiempoTotal = 0;
+            double precioTotal = 0;
+            for (int i = 0; i < numeroLibrosAlmacen; i++) {
+                Libro libro = libros[i];
+                Autor miAutor = libro.getAutor();
+                String autorNombre = miAutor.getNombre();
+                for (String apellido : miAutor.getApellidos()) {
+                    autorNombre += " " + apellido;
                 }
-                printConMargen("Tiempo de lectura total del almacen: " + Integer.toString(tiempoTotal));
-                printConMargen("Valor total del almacen: " + Double.toString(precioTotal));
+                int paginas = libro.getNumeroDePaginas();
+                int tiempo = (int) (paginas / ritmoDeLectura);
+                double precio = libro.getPrecio();
+                tiempoTotal += tiempo;
+                precioTotal += precio;
+                printConMargen(new String[] { libro.getTitulo(),
+                        Integer.toString(libro.getAnoDePublicacion()),
+                        autorNombre, miAutor.getPremioPlaneta() ? "Sí" : "No",
+                        Integer.toString(paginas), Integer.toString(tiempo), dosDec.format(precio) + " E" });
                 linea();
-            } 
-            else {
-                System.out.println("\nHay que llenar el almacen.");
             }
+            printConMargen("Tiempo de lectura total del almacen: " + Integer.toString(tiempoTotal));
+            double centTotal = Math.round(precioTotal * 100);
+            printConMargen("Valor total del almacen: " + dosDec.format(centTotal / 100));
+            linea();
+        } 
+        else {
+            System.out.println("\nHay que llenar el almacen.");
+        }
     }
 
     public static void linea() {
